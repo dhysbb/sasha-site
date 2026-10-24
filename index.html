@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>вопрос</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #5c0a1e;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(24px, 5vw, 44px);
+    color: #f8f0e3;
+    margin-bottom: 40px;
+    padding: 0 20px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .buttons {
+    display: flex;
+    gap: 30px;
+    position: relative;
+  }
+  button {
+    width: 120px;
+    height: 120px;
+    padding: 0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #yesBtn {
+    background-image: url('yes.jpg');
+  }
+  #noBtn {
+    background-image: url('no.jpg');
+    position: fixed;
+    transition: left 0.15s ease-out, top 0.15s ease-out;
+    z-index: 10;
+  }
+  #yesBtn:hover,
+  #noBtn:hover {
+    transform: translateY(-3px);
+  }
+  #result {
+    margin-top: 40px;
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: normal;
+    color: #f8f0e3;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.4s, transform 0.4s;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  }
+  #result.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+</head>
+<body>
+
+<h1>нравится ли тебе саша?</h1>
+
+<div class="buttons">
+  <button id="yesBtn" aria-label="да"></button>
+  <button id="noBtn" aria-label="нет"></button>
+</div>
+
+<div id="result">напиши ей</div>
+
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const result = document.getElementById('result');
+
+  function placeNoInitially() {
+    const rect = yesBtn.getBoundingClientRect();
+    noBtn.style.left = (rect.right + 30) + 'px';
+    noBtn.style.top = rect.top + 'px';
+  }
+  placeNoInitially();
+  window.addEventListener('resize', placeNoInitially);
+
+  let mouseX = -9999, mouseY = -9999;
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function distanceToCursor(x, y) {
+    const dx = (x + noBtn.offsetWidth / 2) - mouseX;
+    const dy = (y + noBtn.offsetHeight / 2) - mouseY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function moveNoBtn() {
+    const btnW = noBtn.offsetWidth;
+    const btnH = noBtn.offsetHeight;
+    const maxX = window.innerWidth - btnW - 10;
+    const maxY = window.innerHeight - btnH - 10;
+
+    let newX, newY, tries = 0;
+    do {
+      newX = Math.random() * maxX;
+      newY = Math.random() * maxY;
+      tries++;
+    } while (tries < 20 && distanceToCursor(newX, newY) < 150);
+
+    noBtn.style.left = newX + 'px';
+    noBtn.style.top = newY + 'px';
+  }
+
+  noBtn.addEventListener('mouseenter', moveNoBtn);
+  noBtn.addEventListener('mousemove', moveNoBtn);
+  noBtn.addEventListener('touchstart', e => { e.preventDefault(); moveNoBtn(); });
+  noBtn.addEventListener('click', e => { e.preventDefault(); moveNoBtn(); });
+
+  yesBtn.addEventListener('click', () => {
+    result.classList.add('show');
+    yesBtn.style.display = 'none';
+    noBtn.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
